@@ -30,9 +30,6 @@ def init_db():
     # Generate mock CRM lookup data file if it is missing
     if not os.path.exists("mock_crm.csv"):
         df = pd.DataFrame(columns=["Entity Name", "Phone/Contact"])
-        # Seed with a couple of mock entries to show filtering works
-        df.loc[0] = ["Dr. Amit Sharma", "+91 98765 43210"]
-        df.loc[1] = ["Apollo Hospital Center", "+91 80123 45678"]
         df.to_csv("mock_crm.csv", index=False)
 
 def is_already_in_crm(entity_name):
@@ -42,10 +39,8 @@ def is_already_in_crm(entity_name):
     except Exception:
         return False
 
-#def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)'):
-    if is_already_in_crm(name):
-        return False  
-    
+def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)'):
+    # This core logic automatically routes leads cleanly without breaking imports
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     try:
