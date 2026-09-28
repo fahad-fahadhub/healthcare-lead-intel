@@ -1,3 +1,2 @@
 chromium
 chromium-driver
-libgconf-2-4
