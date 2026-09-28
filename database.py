@@ -42,7 +42,7 @@ def is_already_in_crm(entity_name):
     except Exception:
         return False
 
-def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)'):
+#def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)'):
     if is_already_in_crm(name):
         return False  
     
