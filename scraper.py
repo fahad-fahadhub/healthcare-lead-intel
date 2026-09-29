@@ -4,7 +4,6 @@ from database import insert_lead, init_db
 def run_india_maps_scraper(city, specialty):
     init_db()
     clean_query = f"{specialty}+{city}".replace(" ", "+")
-    # Upgraded to use a direct spatial metadata index API that bypasses broken HTML selectors
     target_url = f"https://openstreetmap.org{clean_query}&format=json&addressdetails=1&limit=20"
     headers = {"User-Agent": "HealthcareLeadIntelApp/1.0 (fahadgomez1998@gmail.com)"}
     
@@ -15,8 +14,9 @@ def run_india_maps_scraper(city, specialty):
             records = response.json()
             for item in records:
                 display_name = item.get("display_name", "")
-                name = display_name.split(",")[0]
-                address = ", ".join(display_name.split(",")[1:4]).strip()
+                parts = display_name.split(",")
+                name = parts[0].strip() if parts else "Unknown Provider"
+                address = ", ".join(parts[1:4]).strip() if len(parts) > 1 else display_name
                 lat = item.get("lat", "")
                 lon = item.get("lon", "")
                 source_link = f"https://google.com{lat},{lon}"
@@ -50,7 +50,7 @@ def run_us_npi_api_scraper(city, specialty):
                 addresses = item.get("addresses", [])
                 primary_address = f"{city}, USA"
                 phone = "Not Listed"
-                if addresses and isinstance(addresses, list):
+                if addresses and isinstance(addresses, list) and len(addresses) > 0:
                     addr_data = addresses[0]
                     primary_address = f"{addr_data.get('address_1', '')}, {addr_data.get('city', '')}"
                     phone = addr_data.get("telephone_number", "Not Listed")
@@ -64,4 +64,3 @@ def run_us_npi_api_scraper(city, specialty):
     except Exception as e:
         print(f"NPI Cloud Failure: {e}")
     return new_leads
-
