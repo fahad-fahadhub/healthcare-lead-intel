@@ -39,4 +39,3 @@ def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)
         inserted = False  
     conn.close()
     return inserted
-

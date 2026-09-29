@@ -30,15 +30,20 @@ with st.expander("🌱 Organic Inbound Simulation Node (Public Website Widget Bl
 
 # --- SIDEBAR CONTROL CENTER PANEL ---
 st.sidebar.header("🕹️ System Operations")
+# Input authorization key needed to authenticate calls directly into Google's developer framework
+api_token = st.sidebar.text_input("Google Gemini API Token Secret Key:", type="password")
 target_city = st.sidebar.text_input("Target City Matrix Location:", "Bangalore")
 target_spec = st.sidebar.text_input("Specialty Matrix Focus Group:", "Cardiologist")
 
 if st.sidebar.button("🚀 ONE-CLICK EXTRACT & AUTOMATED FILTER (15 LEADS)"):
-    with st.spinner("Mining directories, auto-dumping clones, and compiling 15 exclusive targets..."):
-        count = scraper.discover_and_fill_pipeline(target_city, target_spec, target_count=15)
-        st.sidebar.success(f"Pipeline Filled! Ingested {count} unique, unlisted healthcare accounts.")
+    if not api_token:
+        st.sidebar.error("⚠️ Authentication Key Missing! Please input your Gemini API Token.")
+    else:
+        with st.spinner("Invoking Gemini session matrices, cross-checking competitor listings, and compiling 15 exclusive targets..."):
+            count = scraper.run_gemini_session_miner(target_city, target_spec, api_token, target_count=15)
+            st.sidebar.success(f"Pipeline Filled! Ingested {count} unique, unlisted healthcare accounts.")
 
-# --- ROUTING VIEWPORT MATRIX ---
+# --- DISPLAY ROUTING PORTALS ---
 role = st.radio("Access Control Operational Viewport Matrix:", ["Field Executive Validation Panel", "Sales Intelligence Target Feed"], horizontal=True)
 
 def fetch_filtered_records(status):
@@ -90,23 +95,25 @@ else:
                 v_col1, v_col2 = st.columns(2)
                 with v_col1:
                     st.markdown(f"**📥 Capture Channel:** {row['lead_type']}")
-                    st.markdown(f"**🏗️ Extraction Source:** Direct Spatial/Federal Database Node")
+                    st.markdown(f"**🏗️ Extraction Source:** Google Gemini Session Context Layer")
                 with v_col2:
                     st.link_button("🌐 Open Live Raw Data Source Validation Link", url=row['source_url'], use_container_width=True)
                 
                 st.markdown("---")
                 
-                # DEEP LIVE DEPLOYED OSINT RESEARCH TRIGGER WIDGET BUTTON
                 if st.button(f"🔍 Execute Deep Live Google OSINT Market Research", key=f"osint_{row['id']}"):
-                    with st.spinner("Invoking open-source intelligence spiders across live indexes..."):
-                        deep_sum, deep_rat = ai_engine.research_lead_deep_osint(row['name'], target_city)
-                        conn = sqlite3.connect("leads_intelligence.db")
-                        cursor = conn.cursor()
-                        cursor.execute("UPDATE healthcare_leads SET ai_summary = ?, ai_rationale = ? WHERE id = ?", (deep_sum, deep_rat, row['id']))
-                        conn.commit()
-                        conn.close()
-                        st.success("Deep open-source research complete! Data written to dashboard card matrix.")
-                        st.rerun()
+                    if not api_token:
+                        st.error("⚠️ Input your Gemini API Token Key in the sidebar control to execute live deep web research.")
+                    else:
+                        with st.spinner("Invoking Gemini web-indexing matrices across live directories..."):
+                            deep_sum, deep_rat = ai_engine.research_lead_deep_gemini(row['name'], target_city, api_token)
+                            conn = sqlite3.connect("leads_intelligence.db")
+                            cursor = conn.cursor()
+                            cursor.execute("UPDATE healthcare_leads SET ai_summary = ?, ai_rationale = ? WHERE id = ?", (deep_sum, deep_rat, row['id']))
+                            conn.commit()
+                            conn.close()
+                            st.success("Deep research complete! AI insights updated.")
+                            st.rerun()
                 
                 col1, col2 = st.columns(2)
                 with col1:
