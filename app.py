@@ -22,37 +22,23 @@ with st.expander("🌱 Organic Inbound Simulation Node (Public Website Widget Bl
         inbound_address = st.text_input("Operating Clinic Postal Address:")
     if st.button("Submit Inbound Optimization Request"):
         if inbound_name:
-            success = insert_lead(inbound_name, inbound_phone, inbound_address, "Organic Platform Intake Form", "Organic (Inbound)")
+            success = insert_lead(inbound_name, inbound_phone, inbound_address, "Organic Platform Intake Form", "Organic (Inbound)", "None", "Organic Inbound", "Immediate Outreach Recommended")
             if success:
                 st.success("Lead ingested into the processing workflow queue!")
             else:
                 st.warning("Provider entry already mapped within system directory tables.")
 
-# --- SIDEBAR ENGINE CONTROLS ---
+# --- SIDEBAR CONTROL CENTER PANEL ---
 st.sidebar.header("🕹️ System Operations")
-market_selection = st.sidebar.selectbox("Target Market Pipeline", ["India / Global (Direct Maps Engine)", "United States (NPPES Federal API)"])
+target_city = st.sidebar.text_input("Target City Matrix Location:", "Bangalore")
+target_spec = st.sidebar.text_input("Specialty Matrix Focus Group:", "Cardiologist")
 
-if market_selection == "India / Global (Direct Maps Engine)":
-    target_city = st.sidebar.text_input("Target City Matrix Location:", "Bangalore")
-    target_spec = st.sidebar.text_input("Specialty Matrix Focus Group:", "Cardiologist")
-    if st.sidebar.button("Launch Maps Processing Engine"):
-        with st.spinner("Accessing spatial directory metadata arrays..."):
-            count = scraper.run_india_maps_scraper(target_city, target_spec)
-            st.sidebar.success(f"Processing Complete! Ingested {count} verified target entries.")
-else:
-    us_city = st.sidebar.text_input("Target US City:", "Houston")
-    us_spec = st.sidebar.text_input("Taxonomy/Specialty:", "Cardiovascular Disease")
-    if st.sidebar.button("Fetch Federal NPI Records"):
-        with st.spinner("Polling Federal Databases..."):
-            count = scraper.run_us_npi_api_scraper(us_city, us_spec)
-            st.sidebar.success(f"Ingested {count} verified practitioner profiles.")
+if st.sidebar.button("🚀 ONE-CLICK EXTRACT & AUTOMATED FILTER (15 LEADS)"):
+    with st.spinner("Mining directories, auto-dumping clones, and compiling 15 exclusive targets..."):
+        count = scraper.discover_and_fill_pipeline(target_city, target_spec, target_count=15)
+        st.sidebar.success(f"Pipeline Filled! Ingested {count} unique, unlisted healthcare accounts.")
 
-if st.sidebar.button("Run Competitor Footprint Mapping Engine"):
-    with st.spinner("Running global search indexing vectors..."):
-        ai_engine.run_enrichment_pipeline()
-        st.sidebar.success("Competitor analysis metrics successfully updated!")
-
-# --- DISPLAY ROUTING PORTALS ---
+# --- ROUTING VIEWPORT MATRIX ---
 role = st.radio("Access Control Operational Viewport Matrix:", ["Field Executive Validation Panel", "Sales Intelligence Target Feed"], horizontal=True)
 
 def fetch_filtered_records(status):
@@ -107,7 +93,21 @@ else:
                     st.markdown(f"**🏗️ Extraction Source:** Direct Spatial/Federal Database Node")
                 with v_col2:
                     st.link_button("🌐 Open Live Raw Data Source Validation Link", url=row['source_url'], use_container_width=True)
+                
                 st.markdown("---")
+                
+                # DEEP LIVE DEPLOYED OSINT RESEARCH TRIGGER WIDGET BUTTON
+                if st.button(f"🔍 Execute Deep Live Google OSINT Market Research", key=f"osint_{row['id']}"):
+                    with st.spinner("Invoking open-source intelligence spiders across live indexes..."):
+                        deep_sum, deep_rat = ai_engine.research_lead_deep_osint(row['name'], target_city)
+                        conn = sqlite3.connect("leads_intelligence.db")
+                        cursor = conn.cursor()
+                        cursor.execute("UPDATE healthcare_leads SET ai_summary = ?, ai_rationale = ? WHERE id = ?", (deep_sum, deep_rat, row['id']))
+                        conn.commit()
+                        conn.close()
+                        st.success("Deep open-source research complete! Data written to dashboard card matrix.")
+                        st.rerun()
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown(f"**🤖 AI Processing Summary:** *{row['ai_summary']}*")

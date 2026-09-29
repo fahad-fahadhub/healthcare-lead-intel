@@ -25,17 +25,18 @@ def init_db():
     conn.commit()
     conn.close()
 
-def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)'):
+def insert_lead(name, phone, address, source_url, lead_type='Inorganic (Scraped)', comp_presence=None, summary=None, rationale=None):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO healthcare_leads (name, phone, address, source_url, lead_type)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (name, phone, address, source_url, lead_type))
+            INSERT INTO healthcare_leads (name, phone, address, source_url, lead_type, competitor_presence, ai_summary, ai_rationale)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, phone, address, source_url, lead_type, comp_presence, summary, rationale))
         conn.commit()
         inserted = True
     except sqlite3.IntegrityError:
         inserted = False  
     conn.close()
     return inserted
+
