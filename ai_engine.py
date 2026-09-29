@@ -2,18 +2,20 @@ import sqlite3
 from duckduckgo_search import DDGS
 
 def check_competitor_listings(lead_name):
-    competitor_domains = ["practo.com", "zocdoc.com", "medibuddy.in", "lybrate.com"]
+    competitor_domains = ["practo.com", "zocdoc.com", "medibuddy.in"]
     matched = []
-    
-    with DDGS() as ddgs:
-        for domain in competitor_domains:
-            try:
-                search_query = f"site:{domain} {lead_name}"
-                query_generator = ddgs.text(search_query, max_results=1)
-                if query_generator and len(list(query_generator)) > 0:
-                    matched.append(domain.split('.')[0].capitalize())
-            except Exception:
-                continue
+    try:
+        with DDGS() as ddgs:
+            for domain in competitor_domains:
+                try:
+                    search_query = f"site:{domain} {lead_name}"
+                    results = list(ddgs.text(search_query, max_results=1))
+                    if results:
+                        matched.append(domain.split('.')[0].capitalize())
+                except Exception:
+                    continue
+    except Exception:
+        pass
     return ", ".join(matched) if matched else "None (Exclusive Target)"
 
 def run_enrichment_pipeline():
@@ -24,19 +26,17 @@ def run_enrichment_pipeline():
     
     for row in rows:
         lead_id, name, lead_type = row
-        print(f"🧠 Running intelligence sequence for: {name}")
-        
         competitors = check_competitor_listings(name)
         
         if lead_type == 'Organic (Inbound)':
-            summary = "User initiated registration inquiry directly via organic mini-tool portal."
-            rationale = "High conversion probability. Target reached out to evaluate platform capabilities."
+            summary = "User initiated registration inquiry directly via organic portal."
+            rationale = "High conversion probability. Target reached out to evaluate system capabilities."
         else:
-            summary = "Inorganic provider profile discovered via open-source registry mining operations."
+            summary = f"Inorganic discovery. Checked cross-listings across digital networks."
             if "None" in competitors:
-                rationale = "High prioritization value. Complete digital visibility gap across key platforms."
+                rationale = "High priority asset. Complete visibility vacancy across key vertical applications."
             else:
-                rationale = f"Tech-receptive provider listing discovered on competing ecosystem ({competitors}). Focus pitch on platform advantages and payout times."
+                rationale = f"Provider profile actively listed on competing ecosystem ({competitors}). Highlight transaction time differences."
                 
         cursor.execute('''
             UPDATE healthcare_leads 

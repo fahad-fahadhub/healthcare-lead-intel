@@ -1,7 +1,6 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-import asyncio
 from database import init_db, insert_lead
 import scraper
 import ai_engine
@@ -11,7 +10,7 @@ init_db()
 
 st.title("🩺 Healthcare Lead Intelligence System (HLIS)")
 
-# --- INTEGRATED INBOUND ORGANIC HOOK MODAL ---
+# --- INTEGRATED INBOUND ORGANIC HOOK NODE ---
 with st.expander("🌱 Organic Inbound Simulation Node (Public Website Widget Block)"):
     st.markdown("### Test Inbound Lead Capture Flow")
     col_a, col_b, col_c = st.columns(3)
@@ -29,30 +28,31 @@ with st.expander("🌱 Organic Inbound Simulation Node (Public Website Widget Bl
             else:
                 st.warning("Provider entry already mapped within system directory tables.")
 
-# --- COMPUTATION OPERATION CONTROLS ---
+# --- SIDEBAR ENGINE CONTROLS ---
 st.sidebar.header("🕹️ System Operations")
-market_selection = st.sidebar.selectbox("Target Market Pipeline", ["India (Google Maps Scraper)", "United States (NPPES Federal Registry API)"])
+market_selection = st.sidebar.selectbox("Target Market Pipeline", ["India / Global (Direct Maps Engine)", "United States (NPPES Federal API)"])
 
-if market_selection == "India (Google Maps Scraper)":
-    query_target = st.sidebar.text_input("Location Matrix & Specialty Keyword:", "Cardiologists Indiranagar Bangalore")
-    if st.sidebar.button("Launch Playwright Extractor Engine"):
-        with st.spinner("Automating Chromium Instance..."):
-            count = asyncio.run(scraper.run_google_maps_scraper(query_target))
-            st.sidebar.success(f"Processing Complete! Discovered {count} unlisted target entries.")
+if market_selection == "India / Global (Direct Maps Engine)":
+    target_city = st.sidebar.text_input("Target City Matrix Location:", "Bangalore")
+    target_spec = st.sidebar.text_input("Specialty Matrix Focus Group:", "Cardiologist")
+    if st.sidebar.button("Launch Maps Processing Engine"):
+        with st.spinner("Accessing spatial directory metadata arrays..."):
+            count = scraper.run_india_maps_scraper(target_city, target_spec)
+            st.sidebar.success(f"Processing Complete! Ingested {count} verified target entries.")
 else:
     us_city = st.sidebar.text_input("Target US City:", "Houston")
-    us_spec = st.sidebar.text_input("Taxonomy/Specialty:", "Cardiology")
+    us_spec = st.sidebar.text_input("Taxonomy/Specialty:", "Cardiovascular Disease")
     if st.sidebar.button("Fetch Federal NPI Records"):
         with st.spinner("Polling Federal Databases..."):
             count = scraper.run_us_npi_api_scraper(us_city, us_spec)
-            st.sidebar.success(f"Ingested {count} net-new verified practitioner profiles.")
+            st.sidebar.success(f"Ingested {count} verified practitioner profiles.")
 
 if st.sidebar.button("Run Competitor Footprint Mapping Engine"):
-    with st.spinner("Processing deep web index mapping workflows..."):
+    with st.spinner("Running global search indexing vectors..."):
         ai_engine.run_enrichment_pipeline()
-        st.sidebar.success("Competitor analysis metrics successfully written to database!")
+        st.sidebar.success("Competitor analysis metrics successfully updated!")
 
-# --- MULTI-ROLE CORE DISPLAY ROUTING PORTALS ---
+# --- DISPLAY ROUTING PORTALS ---
 role = st.radio("Access Control Operational Viewport Matrix:", ["Field Executive Validation Panel", "Sales Intelligence Target Feed"], horizontal=True)
 
 def fetch_filtered_records(status):
@@ -62,22 +62,20 @@ def fetch_filtered_records(status):
     conn.close()
     return df
 
-# --- SCREEN 1: FIELD EXECUTIVE QUEUE ---
 if role == "Field Executive Validation Panel":
     st.header("📋 Pending Ground Verification Queue")
     df_field = fetch_filtered_records("Pending Field Visit")
     
     if df_field.empty:
-        st.info("✨ Ground pipelines clear. No current provider entries require manual field validation cycles.")
+        st.info("✨ Ground pipelines clear. No provider profiles require verification cycles.")
     else:
         st.dataframe(df_field[["id", "name", "phone", "address", "lead_type", "source_url"]], use_container_width=True)
-        
-        st.subheader("🖋️ Submit Ground Field Investigation Report (Root Cause Analysis - RCA)")
+        st.subheader("🖋️ Submit Ground Field Investigation Report (RCA)")
         with st.form("ground_verification_form"):
             target_id = st.number_input("Target System ID Reference:", min_value=1, step=1)
             exec_name = st.text_input("Assigned Field Officer Signature:")
-            rca_notes = st.text_area("Root Cause Analysis (Why are they unlisted? What are their core operational software challenges?)")
-            intel_notes = st.text_area("Inside Intel (Key Decision Maker name, gatekeeper schedule, tech pain points)")
+            rca_notes = st.text_area("Root Cause Analysis (Tech challenges, missing listings):")
+            intel_notes = st.text_area("Inside Intel (Key Decision Maker, best schedule to call):")
             
             if st.form_submit_button("Verify Report and Unlock for Sales Deployment"):
                 if exec_name and rca_notes:
@@ -92,32 +90,24 @@ if role == "Field Executive Validation Panel":
                     conn.close()
                     st.success(f"Account Profile #{target_id} processed and transferred to Sales Dashboard.")
                     st.rerun()
-
-# --- SCREEN 2: THE SALES INTEL HIGH-TRACEABILITY FEED ---
 else:
     st.header("🎯 Highly Enriched Qualified Lead Feed Pipeline")
     df_sales = fetch_filtered_records("Verified")
     
     if df_sales.empty:
-        st.warning("⏳ System holding state. Awaiting completion of ground validation cycles by field teams.")
+        st.warning("⏳ System holding state. Awaiting completion of ground validation cycles.")
     else:
         for idx, row in df_sales.iterrows():
             badge = "🟢 Organic Inbound" if row['lead_type'] == "Organic (Inbound)" else "🔍 Inorganic Outbound"
-            
             with st.expander(f"{badge} | {row['name']} | Competitors: {row['competitor_presence']}"):
-                
-                # --- HIGH TRACEABILITY ORIGIN LOGS BLOCK ---
                 st.info(f"📌 **Lead Origin & Traceability Proof Panel**")
                 v_col1, v_col2 = st.columns(2)
                 with v_col1:
                     st.markdown(f"**📥 Capture Channel:** {row['lead_type']}")
-                    st.markdown(f"**🏗️ Extraction Blueprint:** {'Federal JSON Database Sync' if 'npiregistry' in row['source_url'] else 'Playwright Dynamic Browser Memory Scan'}")
+                    st.markdown(f"**🏗️ Extraction Source:** Direct Spatial/Federal Database Node")
                 with v_col2:
                     st.link_button("🌐 Open Live Raw Data Source Validation Link", url=row['source_url'], use_container_width=True)
-                
                 st.markdown("---")
-                
-                # --- METRIC INSIGHTS DISPLAY BLOCKS ---
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown(f"**🤖 AI Processing Summary:** *{row['ai_summary']}*")
@@ -126,5 +116,4 @@ else:
                     st.markdown(f"**🕵️ Authenticated By Field Officer:** {row['field_executive_name']}")
                     st.markdown(f"**🛑 Ground Root Cause Analysis Report:** {row['root_cause_analysis']}")
                     st.markdown(f"**🔑 Internal Account Intelligence Pockets:** {row['inside_intelligence']}")
-                
                 st.button("Lock Target Account to My Representative Portfolio", key=f"lock_{row['id']}", type="primary")
